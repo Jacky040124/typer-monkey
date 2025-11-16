@@ -1,22 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-
-interface Profile {
-  id: string;
-  nickname: string | null;
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface ProfileContextType {
-  profile: Profile | null;
-  loading: boolean;
-  updateNickname: (nickname: string) => Promise<{ error: any }>;
-  updateAvatar: (file: File) => Promise<{ error: any }>;
-  getAvatarUrl: () => string | null;
-  refreshProfile: () => Promise<void>;
-}
+import type { Profile, ProfileContextType } from '@/models/profile';
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 

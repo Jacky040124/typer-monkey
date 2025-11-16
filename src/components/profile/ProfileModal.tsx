@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
+import type { ProfileModalProps } from '@/models/components';
 import './ProfileModal.css';
-
-interface ProfileModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const { user } = useAuth();

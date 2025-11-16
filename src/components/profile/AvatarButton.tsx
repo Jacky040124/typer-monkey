@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import ProfileModal from '@/components/profile/ProfileModal';
-
-interface AvatarButtonProps {
-  onModalOpenChange?: (isOpen: boolean) => void;
-}
+import type { AvatarButtonProps } from '@/models/components';
 
 function AvatarButton({ onModalOpenChange }: AvatarButtonProps) {
   const { user } = useAuth();
@@ -25,12 +22,12 @@ function AvatarButton({ onModalOpenChange }: AvatarButtonProps) {
 
   const handleOpen = () => {
     setIsModalOpen(true);
-    onModalOpenChange?.(true);
+    onModalOpenChange(true);
   };
 
   const handleClose = () => {
     setIsModalOpen(false);
-    onModalOpenChange?.(false);
+    onModalOpenChange(false);
   };
 
   return (

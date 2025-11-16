@@ -1,10 +1,5 @@
 import React from 'react';
-
-interface MonkeyProps {
-  isTyping: boolean;
-  typingSpeed: number; // milliseconds between keystrokes
-  onKeystroke: (char: string) => void;
-}
+import type { MonkeyProps } from '@/models/typing';
 
 export default function Monkey({ isTyping, typingSpeed, onKeystroke }: MonkeyProps) {
   React.useEffect(() => {

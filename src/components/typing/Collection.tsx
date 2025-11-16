@@ -1,8 +1,5 @@
 import { useState, forwardRef } from 'react';
-
-interface CollectionProps {
-  words: string[];
-}
+import type { CollectionProps } from '@/models/typing';
 
 // CONST 
 const RARITY_THRESHOLDS = {
