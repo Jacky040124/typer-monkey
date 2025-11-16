@@ -1,4 +1,4 @@
-import words from '../assets/words.json';
+import words from '@/assets/words.json';
 
 // Create a Set for O(1) lookup
 const wordSet = new Set(words.map((word: string) => word.toLowerCase()));

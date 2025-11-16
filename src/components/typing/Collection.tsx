@@ -4,11 +4,19 @@ interface CollectionProps {
   words: string[];
 }
 
+// CONST 
+const RARITY_THRESHOLDS = {
+  legendary: 8,
+  rare: 6,
+  uncommon: 4,
+  common: 0,
+};
+
+
 const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ words }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
   
   // Sort by rarity (length descending, then alphabetically)
-  // Longer words are rarer and more valuable
   const sortedWords = [...words].sort((a, b) => {
     if (b.length !== a.length) {
       return b.length - a.length; // Longer words first
@@ -18,17 +26,11 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ words }, ref) 
 
   // Categorize words by rarity based on length
   const getRarityClass = (word: string) => {
-    if (word.length >= 8) return 'legendary';
-    if (word.length >= 6) return 'rare';
-    if (word.length >= 4) return 'uncommon';
-    return 'common';
+    return Object.entries(RARITY_THRESHOLDS).find(([_, threshold]) => word.length >= threshold)?.[0] || 'common';
   };
 
   const getRarityLabel = (word: string) => {
-    if (word.length >= 8) return '✦';
-    if (word.length >= 6) return '◆';
-    if (word.length >= 4) return '▲';
-    return '•';
+    return Object.entries(RARITY_THRESHOLDS).find(([_, threshold]) => word.length >= threshold)?.[0] || 'common';
   };
 
   return (
