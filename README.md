@@ -1,15 +1,14 @@
-# Typer Monkey Game 🐵
+# Typer Monkey Experience 🐵
 
-A web-based typing game where a monkey randomly types on the keyboard, and valid English words are automatically detected and added to a collection in real-time.
+An immersive Three.js scene paired with a lightweight React overlay. The project recreates the Typer Monkey desk setup complete with ambient music and quick-access UI controls.
 
 ## Features
 
-- 🐵 Random monkey typing simulation
-- 📝 Real-time word detection from typing stream
-- 📚 Automatic collection of valid English words
-- 🎨 Clean, minimal UI
-- ⏯️ Start/stop controls
-- 🗑️ Clear functionality
+- 🎮 Three.js-powered scene management with `SceneManager` and custom objects
+- 🖥️ Minimal React overlay (music player, GitHub star button, Dev Mode toggle)
+- 🎵 Ambient music player with play/pause UI and track metadata
+- 🧪 Dev Mode toggle surfaced through the overlay for quick scene debugging
+- ⭐ GitHub Star button with live star-count formatting
 
 ## Getting Started
 
@@ -40,10 +39,10 @@ npm run build
 
 ## How It Works
 
-1. Click **Start** to begin the monkey typing simulation
-2. The monkey randomly types characters (letters, spaces, punctuation)
-3. As valid English words are detected in real-time, they're automatically added to your collection
-4. Watch your collection grow as the monkey continues typing!
+1. `main.tsx` boots the Three.js scene (`getThreeApp`) alongside the React overlay.
+2. The Three scene mounts into dedicated DOM containers managed by `ThreeApp`.
+3. The React `App` component shows persistent controls such as the music player, GitHub button, and dev-mode toggle.
+4. Toggling Dev Mode calls straight into the shared `ThreeApp` instance so the renderer can update camera controls/UI hints.
 
 ## Project Structure
 
@@ -51,14 +50,18 @@ npm run build
 typing-monkey/
 ├── src/
 │   ├── components/
-│   │   ├── Monkey.tsx       # Monkey typing simulation
-│   │   └── Collection.tsx   # Collection display component
+│   │   ├── MusicPlayer.tsx
+│   │   └── profile/GitHubStarButton.tsx
+│   ├── lib/
+│   │   ├── ThreeApp.tsx
+│   │   ├── SceneManager.ts
+│   │   └── objects/
+│   ├── models/
+│   │   └── typing.ts
 │   ├── utils/
-│   │   └── wordDetector.ts  # Word detection logic
-│   ├── assets/
-│   │   └── words.json       # English dictionary
-│   ├── App.tsx              # Main app component
-│   └── main.tsx             # Entry point
+│   │   └── numberFormatter.ts
+│   ├── App.tsx
+│   └── main.tsx
 └── package.json
 ```
 

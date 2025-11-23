@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { COMPUTER_CONFIG } from '@/models/constants/scene';
+import { COMPUTER_CONFIG } from '@constants/scene';
 import { MonitorScreen } from './MonitorScreen';
 import { CameraKey } from '@/models/three';
 

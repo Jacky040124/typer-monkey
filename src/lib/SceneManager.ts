@@ -67,7 +67,7 @@ export class ThreeSceneManager {
     this.debugOverlay = document.createElement('div');
     Object.assign(this.debugOverlay.style, {
       position: 'fixed',
-      top: '60px',
+      top: '12px',
       left: '12px',
       padding: '10px 12px',
       backgroundColor: 'rgba(0, 0, 0, 0.75)',

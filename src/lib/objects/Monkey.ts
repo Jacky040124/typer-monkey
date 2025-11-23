@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CameraKey } from '@/models/three';
-import { MONKEY_CONFIG } from '@/models/constants/scene';
+import { MONKEY_CONFIG } from '@constants/scene';
 
 export class Monkey {
   isTyping: boolean = false;

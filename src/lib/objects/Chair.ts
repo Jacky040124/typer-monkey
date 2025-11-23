@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CHAIR_CONFIG } from '@/models/constants/scene';
+import { CHAIR_CONFIG } from '@constants/scene';
 
 export class Chair {
   group: THREE.Group;

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { SEVERANCE_ROOM_CONFIG } from '@/models/constants/scene';
+import { SEVERANCE_ROOM_CONFIG } from '@constants/scene';
 
 export class SeveranceRoom {
   group: THREE.Group;

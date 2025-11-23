@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import GitHubStarButton from "@/components/profile/GitHubStarButton";
+import GitHubStarButton from "@profile/GitHubStarButton";
 import MusicPlayer from "@/components/MusicPlayer";
 import "./App.css";
 

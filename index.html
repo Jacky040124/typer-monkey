@@ -2,13 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/typer-monkey.svg" />
+    <link rel="icon" type="image/svg+xml" href="/models/lumon_logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Typer Monkey - Typing Game</title>
+    <title>Lumon Industries</title>
     <style>
-      #three-webgl,
-      #three-css,
-      #three-typing-container {
+      #three-webgl {
         position: fixed;
         top: 0;
         left: 0;
@@ -18,12 +16,12 @@
       }
       
       #three-css {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
         pointer-events: none;
-      }
-      
-      #three-typing-container {
-        position: absolute;
-        left: -9999px;
       }
       
       #root {
@@ -36,7 +34,6 @@
     <!-- Three.js Containers (vanilla) -->
     <div id="three-webgl"></div>
     <div id="three-css"></div>
-    <div id="three-typing-container"></div>
     
     <!-- React App Container -->
     <div id="root"></div>

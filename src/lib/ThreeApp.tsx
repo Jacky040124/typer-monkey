@@ -1,19 +1,7 @@
-import { createRoot } from 'react-dom/client';
 import { ThreeSceneManager } from '@/lib/SceneManager';
-import TypingOS from '@/components/typing/TypingOS';
-import type { TypingState } from '@/models/typing';
 
 export class ThreeApp {
   sceneManager: ThreeSceneManager | null = null;
-  typingOSRoot: any = null;
-  
-  typingState: TypingState = {
-    isTyping: false,
-    typingStream: '',
-    collection: [],
-    elapsedTime: 0,
-    highlightedRanges: [],
-  };
   
   constructor() {
     this.init();
@@ -22,9 +10,8 @@ export class ThreeApp {
   init() {
     const webglContainer = document.getElementById('three-webgl');
     const cssContainer = document.getElementById('three-css');
-    const typingContainer = document.getElementById('three-typing-container');
     
-    if (!webglContainer || !cssContainer || !typingContainer) {
+    if (!webglContainer || !cssContainer) {
       throw new Error('Element not found');
     }
     
@@ -32,35 +19,6 @@ export class ThreeApp {
       webglContainer,
       cssContainer
     );
-    
-    this.renderTypingOS();
-  }
-  
-  renderTypingOS() {
-    const container = document.getElementById('three-typing-container');
-    if (!container) return;
-    
-    if (!this.typingOSRoot) {
-      this.typingOSRoot = createRoot(container);
-    }
-    
-    this.typingOSRoot.render(
-      <TypingOS 
-        {...this.typingState}
-        lines={[]}
-        pageStart={0}
-        charsPerLine={80}
-      />
-    );
-  }
-  
-  updateTypingState(newState: Partial<TypingState>) {
-    this.typingState = { ...this.typingState, ...newState };
-    this.renderTypingOS();
-    
-    if (this.sceneManager) {
-      this.sceneManager.monkeyScene.setIsTyping(this.typingState.isTyping);
-    }
   }
   
   toggleDevMode() {
@@ -76,9 +34,6 @@ export class ThreeApp {
   }
   
   destroy() {
-    if (this.typingOSRoot) {
-      this.typingOSRoot.unmount();
-    }
     if (this.sceneManager) {
       this.sceneManager.dispose();
     }

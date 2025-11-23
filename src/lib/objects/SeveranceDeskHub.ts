@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { SEVERANCE_DESK_CONFIG } from '@/models/constants/scene';
+import { SEVERANCE_DESK_CONFIG } from '@constants/scene';
 import { Chair } from '@/lib/objects/Chair';
 import { Computer } from '@/lib/objects/Computer';
 import { CameraKey } from '@/models/three';

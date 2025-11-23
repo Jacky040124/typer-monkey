@@ -3,8 +3,68 @@ import { useState, useEffect, useRef } from 'react';
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [audioError, setAudioError] = useState<string | null>(null);
 
   console.log('[MusicPlayer] Component rendered, isPlaying:', isPlaying);
+
+  // Handle audio loading and errors
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleCanPlay = () => {
+      console.log('[MusicPlayer] Audio can play - file loaded successfully');
+      setAudioError(null);
+    };
+
+    const handleError = () => {
+      const error = audio.error;
+      let errorMsg = 'Unknown error';
+      
+      if (error) {
+        switch (error.code) {
+          case error.MEDIA_ERR_ABORTED:
+            errorMsg = 'Audio loading aborted';
+            break;
+          case error.MEDIA_ERR_NETWORK:
+            errorMsg = 'Network error loading audio';
+            break;
+          case error.MEDIA_ERR_DECODE:
+            errorMsg = 'Audio decode error';
+            break;
+          case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            errorMsg = 'Audio format not supported or file not found';
+            break;
+        }
+      }
+      
+      console.error('[MusicPlayer] Audio error:', errorMsg, error);
+      setAudioError(errorMsg);
+    };
+
+    const handleLoadStart = () => {
+      console.log('[MusicPlayer] Audio load started');
+    };
+
+    const handleLoadedData = () => {
+      console.log('[MusicPlayer] Audio data loaded');
+    };
+
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('loadstart', handleLoadStart);
+    audio.addEventListener('loadeddata', handleLoadedData);
+
+    // Try to load the audio
+    audio.load();
+
+    return () => {
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('error', handleError);
+      audio.removeEventListener('loadstart', handleLoadStart);
+      audio.removeEventListener('loadeddata', handleLoadedData);
+    };
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -57,11 +117,11 @@ export default function MusicPlayer() {
     setIsPlaying(!isPlaying);
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDown = () => {
     console.log('[MusicPlayer] Button mousedown event');
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseUp = () => {
     console.log('[MusicPlayer] Button mouseup event');
   };
 
@@ -109,7 +169,13 @@ export default function MusicPlayer() {
         ref={audioRef}
         src="/background_music.mp3"
         loop
+        preload="auto"
       />
+      {audioError && (
+        <span style={{ color: '#d32f2f', fontSize: '12px', marginLeft: '8px' }}>
+          Error: {audioError}
+        </span>
+      )}
       
       <div style={{ width: '1px', height: '16px', background: '#e0e0e0' }} />
 
