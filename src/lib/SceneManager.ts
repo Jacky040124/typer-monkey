@@ -212,7 +212,6 @@ export class ThreeSceneManager {
       }
 
       if (this.isAutoSpinning) {
-        console.log('Click detected, stopping auto-spin and transitioning to FRONT');
         this.transitionFromSpinToFront();
         return;
       }
@@ -222,7 +221,6 @@ export class ThreeSceneManager {
       }
       
       event.preventDefault();
-      console.log('Click detected, cycling view');
       this.cycleView();
     };
     
@@ -378,8 +376,6 @@ export class ThreeSceneManager {
       targetAngle += Math.PI * 2;
     }
 
-    console.log(`[SPIN TRANSITION] Current Angle: ${currentAngle}, Target Angle: ${targetAngle}`);
-
     // Animate angle
     const animState = { angle: currentAngle };
     const spinTween = new TWEEN.Tween(animState)
@@ -395,7 +391,6 @@ export class ThreeSceneManager {
         this.cameraOrientation.setFromRotationMatrix(this.lookAtMatrix);
       })
       .onComplete(() => {
-        console.log('[SPIN TRANSITION] Complete');
         this.currentKeyframe = CameraKey.FRONT;
         this.targetKeyframe = undefined;
         
@@ -409,15 +404,10 @@ export class ThreeSceneManager {
 
   transitionTo(key: CameraKey, duration: number = 1500) {
     if (this.currentKeyframe === key) {
-      console.log(`Already at ${key}, skipping transition`);
       return;
     }
     
     const targetKeyframe = this.keyframeInstances[key];
-    
-    console.log(`[TRANSITION] Starting: ${this.currentKeyframe} → ${key}`);
-    console.log(`[TRANSITION] Current pos:`, this.cameraPosition.toArray());
-    console.log(`[TRANSITION] Target pos:`, targetKeyframe.position.toArray());
     
     if (this.targetKeyframe) {
       TWEEN.removeAll();
@@ -447,7 +437,6 @@ export class ThreeSceneManager {
       .to(targetKeyframe.position, duration)
       .easing(TWEEN.Easing.Quintic.InOut)
       .onComplete(() => {
-        console.log(`[TRANSITION] Complete! Now at ${key}`);
         this.currentKeyframe = key;
         this.targetKeyframe = undefined;
         this.monkeyScene.setViewMode(key);
@@ -473,7 +462,6 @@ export class ThreeSceneManager {
     orientationTween.start();
     opacityTween.start();
       
-    console.log('[TRANSITION] Tweens started:', posTween, focTween, orientationTween, opacityTween);
   }
   
   cycleView() {
@@ -486,7 +474,6 @@ export class ThreeSceneManager {
     const viewCycle = [CameraKey.FRONT, CameraKey.BACK_WIDE, CameraKey.BACK_CLOSE];
     const currentIndex = viewCycle.indexOf(keyframeToUse);
     const nextIndex = (currentIndex + 1) % viewCycle.length;
-    console.log(`Camera transitioning: ${keyframeToUse} → ${viewCycle[nextIndex]}`);
     this.transitionTo(viewCycle[nextIndex]);
   }
   
@@ -498,7 +485,6 @@ export class ThreeSceneManager {
     if (enabled) {
       this.controls.target.copy(this.cameraFocalPoint);
       this.controls.update();
-      console.log('Dev mode enabled - free camera control (Arrow keys/WASD to move)');
     } else {
       this.pressedKeys.clear();
       
@@ -509,7 +495,6 @@ export class ThreeSceneManager {
         this.camera.position.copy(this.cameraPosition);
         this.camera.quaternion.copy(this.cameraOrientation);
       }
-      console.log('Dev mode disabled - keyframe control restored');
     }
   }
 
@@ -539,32 +524,27 @@ export class ThreeSceneManager {
   private handleMonitorHover = (hovering: boolean) => {
     if (this.devMode) return;
     this.monitorHovered = hovering;
-    console.log('[SceneManager] monitor hover event:', hovering, 'current=', this.currentKeyframe, 'target=', this.targetKeyframe);
 
     if (!hovering) {
       this.clearHoverTimeout();
       if (this.currentKeyframe === CameraKey.BACK_CLOSE) {
-        console.log('[SceneManager] hover ended while BACK_CLOSE, returning to BACK_WIDE');
         this.transitionTo(CameraKey.BACK_WIDE);
       }
       return;
     }
 
     if (this.currentKeyframe === CameraKey.BACK_WIDE || this.targetKeyframe === CameraKey.BACK_WIDE) {
-      console.log('[SceneManager] hover while BACK_WIDE, starting timeout');
       this.startHoverTimeout();
     }
   };
 
   private startHoverTimeout() {
     if (this.monitorHoverTimeout) return;
-    console.log('[SceneManager] scheduling hover timeout to go BACK_CLOSE');
     this.monitorHoverTimeout = window.setTimeout(() => {
       this.monitorHoverTimeout = null;
       const canTransition =
         this.monitorHovered &&
         (this.currentKeyframe === CameraKey.BACK_WIDE || this.targetKeyframe === CameraKey.BACK_WIDE);
-      console.log('[SceneManager] hover timeout fired, canTransition=', canTransition, 'current=', this.currentKeyframe, 'target=', this.targetKeyframe);
       if (canTransition) {
         this.transitionTo(CameraKey.BACK_CLOSE);
       }
@@ -573,7 +553,6 @@ export class ThreeSceneManager {
 
   private clearHoverTimeout() {
     if (this.monitorHoverTimeout) {
-      console.log('[SceneManager] clearing hover timeout');
       clearTimeout(this.monitorHoverTimeout);
       this.monitorHoverTimeout = null;
     }
@@ -619,11 +598,6 @@ export class ThreeSceneManager {
     const elapsedTime = this.clock.getElapsedTime();
 
     TWEEN.update();
-    
-    if (this.targetKeyframe && Math.random() < 0.05) {
-      console.log('[ANIMATE] Transitioning to:', this.targetKeyframe);
-      console.log('[ANIMATE] Camera pos:', this.cameraPosition.toArray());
-    }
 
     for (const key in this.keyframeInstances) {
       const _key = key as CameraKey;
@@ -671,10 +645,6 @@ export class ThreeSceneManager {
     
     // Update Debug Overlay
     this.updateDebugOverlay();
-    
-    if (this.targetKeyframe && Math.random() < 0.05) {
-      console.log('[ANIMATE] Camera actual pos:', this.camera.position.toArray());
-    }
 
     // Pass main scene to CSS renderer as well so hierarchical CSS3DObjects are rendered
     this.rendererManager.render(this.scene, this.scene, this.camera);
@@ -719,7 +689,6 @@ export class ThreeSceneManager {
   };
 
   dispose() {
-    console.log('Disposing ThreeSceneManager...');
     this.stop();
     window.removeEventListener('resize', this.handleResize);
     
@@ -755,6 +724,5 @@ export class ThreeSceneManager {
         }
       }
     });
-    console.log('ThreeSceneManager disposed');
   }
 }

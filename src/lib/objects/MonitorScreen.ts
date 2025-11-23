@@ -110,14 +110,12 @@ export class MonitorScreen {
   }
 
   private handlePointerEnter = () => {
-    console.log('[MonitorScreen] pointerenter, canShowIframe=', this.canShowIframe, 'interactive=', this.isInteractive);
     if (this.hoverListener && this.canShowIframe) {
       this.hoverListener(true);
     }
   };
 
   private handlePointerLeave = () => {
-    console.log('[MonitorScreen] pointerleave, canShowIframe=', this.canShowIframe, 'interactive=', this.isInteractive);
     if (this.hoverListener && this.canShowIframe) {
       this.hoverListener(false);
     }
@@ -151,7 +149,6 @@ export class MonitorScreen {
   setInteractionEnabled(enabled: boolean) {
     const allowInteraction = enabled && this.canShowIframe;
     this.isInteractive = allowInteraction;
-    console.log('[MonitorScreen] setInteractionEnabled -> allowInteraction=', allowInteraction, 'canShowIframe=', this.canShowIframe);
 
     if (!allowInteraction && this.containerEl) {
       this.containerEl.blur();
