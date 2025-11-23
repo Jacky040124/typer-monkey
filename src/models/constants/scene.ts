@@ -150,9 +150,9 @@ export const CHAIR_CONFIG = {
 // --- SEVERANCE ROOM CONFIGURATION ---
 export const SEVERANCE_ROOM_CONFIG = {
   DIMENSIONS: {
-    WIDTH: 24,
-    DEPTH: 24,
-    HEIGHT: 4.5,
+    WIDTH: 30,
+    DEPTH: 30,
+    HEIGHT: 5,
   },
   COLORS: {
     CARPET: 0x2d4635, // Iconic dark green carpet
@@ -161,10 +161,10 @@ export const SEVERANCE_ROOM_CONFIG = {
     BASEBOARD: 0x1a1a1a, // Dark trim
   },
   CEILING: {
-    GRID_SIZE: 2.4, // Increased from 1.2 to make blocks bigger
+    GRID_SIZE: 3.6, // Increased from 1.2 to make blocks bigger
     LIGHT_PANEL_RATIO: 0.85, // Ratio of panel that is the light vs frame
     BEAM_THICKNESS: 0.15, // Width of the separator beams
-    BEAM_DEPTH: 0.15, // Depth/Height of the separator beams
+    BEAM_DEPTH: 0.2, // Depth/Height of the separator beams
     EMISSIVE_INTENSITY: 1.0,
   }
 };

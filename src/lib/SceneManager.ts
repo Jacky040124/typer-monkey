@@ -272,11 +272,11 @@ export class ThreeSceneManager {
     
     // Soften the area covered
     dirLight.shadow.camera.near = 0.1;
-    dirLight.shadow.camera.far = 50;
-    dirLight.shadow.camera.left = -15;
-    dirLight.shadow.camera.right = 15;
-    dirLight.shadow.camera.top = 15;
-    dirLight.shadow.camera.bottom = -15;
+    dirLight.shadow.camera.far = 60;
+    dirLight.shadow.camera.left = -20;
+    dirLight.shadow.camera.right = 20;
+    dirLight.shadow.camera.top = 20;
+    dirLight.shadow.camera.bottom = -20;
     
     this.scene.add(dirLight);
 

@@ -61,6 +61,10 @@ export class SeveranceRoom {
     const { DIMENSIONS, COLORS } = SEVERANCE_ROOM_CONFIG;
     
     const bumpMap = this.generateCarpetTexture();
+    bumpMap.repeat.set(
+      DIMENSIONS.WIDTH / 2.4,
+      DIMENSIONS.DEPTH / 2.4
+    );
     
     // High roughness carpet material
     const material = new THREE.MeshStandardMaterial({
@@ -140,7 +144,7 @@ export class SeveranceRoom {
   }
 
   createCeiling() {
-    const { DIMENSIONS, COLORS, CEILING } = SEVERANCE_ROOM_CONFIG;
+    const { DIMENSIONS, CEILING } = SEVERANCE_ROOM_CONFIG;
     const height = DIMENSIONS.HEIGHT;
     
     const ceilingGroup = new THREE.Group();
@@ -170,11 +174,6 @@ export class SeveranceRoom {
     
     // Beams running along Z axis (spaced along X)
     const beamGeoZ = new THREE.BoxGeometry(beamThickness, beamDepth, DIMENSIONS.DEPTH);
-    for (let i = 0; i <= cols; i++) {
-        const x = -(DIMENSIONS.WIDTH / 2) + (i * gridSize);
-        // Clamp to ensure we cover the edges properly if division isn't exact, 
-        // or just center the grid. Let's center the grid.
-    }
 
     // Let's build the grid centered.
     const fullWidth = cols * gridSize;
@@ -227,7 +226,7 @@ export class SeveranceRoom {
         // Bottom of beam is -beamDepth. Let's put panel at -beamDepth + 0.05
         
         panel.rotation.x = Math.PI / 2;
-        panel.position.set(centerX, -beamDepth + 0.05, centerZ);
+        panel.position.set(centerX, -beamDepth + 0.2, centerZ);
         
         // Add a subtle inner frame or black gap? 
         // For now just the panel.
