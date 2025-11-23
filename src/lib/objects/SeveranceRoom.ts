@@ -92,10 +92,13 @@ export class SeveranceRoom {
     const halfDepth = DIMENSIONS.DEPTH / 2;
     const height = DIMENSIONS.HEIGHT;
     
+    const wallColor = new THREE.Color(COLORS.WALLS);
     const wallMaterial = new THREE.MeshStandardMaterial({
-      color: COLORS.WALLS,
-      roughness: 0.5,
-      metalness: 0.1,
+      color: wallColor,
+      roughness: 0.25,
+      metalness: 0.0,
+      emissive: wallColor.clone(),
+      emissiveIntensity: 0.08,
       side: THREE.FrontSide,
     });
     
@@ -104,14 +107,21 @@ export class SeveranceRoom {
       roughness: 0.8,
     });
 
-    // 1. Back Wall (North) - Has Door
+    const seamMaterial = new THREE.MeshStandardMaterial({
+      color: COLORS.WALL_SEAMS,
+      roughness: 0.4,
+      metalness: 0.0,
+      side: THREE.FrontSide,
+    });
+
+    // 1. Back Wall (North)
     this.createWallSide({
       start: new THREE.Vector3(-halfWidth, 0, -halfDepth),
       end: new THREE.Vector3(halfWidth, 0, -halfDepth),
       height,
       material: wallMaterial,
       baseboardMaterial,
-      hasDoor: true,
+      seamMaterial,
       normal: new THREE.Vector3(0, 0, 1)
     });
 
@@ -122,6 +132,7 @@ export class SeveranceRoom {
       height,
       material: wallMaterial,
       baseboardMaterial,
+      seamMaterial,
       normal: new THREE.Vector3(0, 0, -1)
     });
 
@@ -132,6 +143,7 @@ export class SeveranceRoom {
       height,
       material: wallMaterial,
       baseboardMaterial,
+      seamMaterial,
       normal: new THREE.Vector3(1, 0, 0)
     });
 
@@ -143,6 +155,7 @@ export class SeveranceRoom {
       material: wallMaterial,
       baseboardMaterial,
       hasClock: true,
+      seamMaterial,
       normal: new THREE.Vector3(-1, 0, 0)
     });
 
@@ -159,77 +172,31 @@ export class SeveranceRoom {
     height: number;
     material: THREE.Material;
     baseboardMaterial: THREE.Material;
-    hasDoor?: boolean;
     hasClock?: boolean;
+    seamMaterial: THREE.Material;
     normal: THREE.Vector3;
   }) {
     const vector = new THREE.Vector3().subVectors(config.end, config.start);
     const length = vector.length();
     const direction = vector.clone().normalize();
     
-    if (config.hasDoor) {
-      const doorWidth = 2.2;
-      const doorHeight = 2.4;
-      const sideWidth = (length - doorWidth) / 2;
-      
-      // Left Segment
-      this.createWallSegment({
-        start: config.start,
-        width: sideWidth,
-        height: config.height,
-        direction,
-        material: config.material,
-        baseboardMaterial: config.baseboardMaterial,
-        normal: config.normal
-      });
-      
-      const doorPos = new THREE.Vector3().copy(config.start).add(direction.clone().multiplyScalar(sideWidth));
-      
-      // Door Header
-      const headerHeight = config.height - doorHeight;
-      this.createWallSegment({
-        start: new THREE.Vector3(doorPos.x, doorHeight, doorPos.z),
-        width: doorWidth,
-        height: headerHeight,
-        direction,
-        material: config.material,
-        baseboardMaterial: null,
-        normal: config.normal
-      });
-      
-      // Create Door
-      this.createDoor(doorPos, doorWidth, doorHeight, direction, config.normal);
-      
-      // Right Segment
-      const rightStart = new THREE.Vector3().copy(doorPos).add(direction.clone().multiplyScalar(doorWidth));
-      this.createWallSegment({
-        start: rightStart,
-        width: sideWidth,
-        height: config.height,
-        direction,
-        material: config.material,
-        baseboardMaterial: config.baseboardMaterial,
-        normal: config.normal
-      });
-      
-    } else {
-      // Standard Wall
-      this.createWallSegment({
-        start: config.start,
-        width: length,
-        height: config.height,
-        direction,
-        material: config.material,
-        baseboardMaterial: config.baseboardMaterial,
-        normal: config.normal
-      });
-      
-      if (config.hasClock) {
-         const midPoint = new THREE.Vector3().copy(config.start).add(direction.clone().multiplyScalar(length / 2));
-         midPoint.y = 3.5;
-         midPoint.add(config.normal.clone().multiplyScalar(0.1));
-         this.createClock(midPoint, config.normal);
-      }
+    // Standard Wall
+    this.createWallSegment({
+      start: config.start,
+      width: length,
+      height: config.height,
+      direction,
+      material: config.material,
+      baseboardMaterial: config.baseboardMaterial,
+      seamMaterial: config.seamMaterial,
+      normal: config.normal
+    });
+    
+    if (config.hasClock) {
+       const midPoint = new THREE.Vector3().copy(config.start).add(direction.clone().multiplyScalar(length / 2));
+       midPoint.y = 3.5;
+       midPoint.add(config.normal.clone().multiplyScalar(0.1));
+       this.createClock(midPoint, config.normal);
     }
   }
 
@@ -240,6 +207,7 @@ export class SeveranceRoom {
     direction: THREE.Vector3;
     material: THREE.Material;
     baseboardMaterial: THREE.Material | null;
+    seamMaterial?: THREE.Material;
     normal: THREE.Vector3;
   }) {
     const panelWidth = 1.2;
@@ -281,6 +249,27 @@ export class SeveranceRoom {
         this.group.add(baseboard);
       }
     }
+
+    if (params.seamMaterial) {
+      const seamWidth = 0.04;
+      const seamDepth = thickness + 0.04;
+      const seamGeo = new THREE.BoxGeometry(seamWidth, params.height, seamDepth);
+
+      for (let i = 0; i <= numPanels; i++) {
+        const seam = new THREE.Mesh(seamGeo, params.seamMaterial);
+        const boundaryDist = i * actualPanelWidth;
+        const seamPos = new THREE.Vector3().copy(params.start).add(params.direction.clone().multiplyScalar(boundaryDist));
+        seamPos.y = params.start.y + params.height / 2;
+        seamPos.add(params.normal.clone().multiplyScalar(-thickness/2));
+        seamPos.add(params.normal.clone().multiplyScalar(0.015));
+
+        seam.position.copy(seamPos);
+        seam.lookAt(seamPos.clone().add(params.normal));
+        seam.castShadow = false;
+        seam.receiveShadow = false;
+        this.group.add(seam);
+      }
+    }
   }
 
   createColumn(position: THREE.Vector3) {
@@ -301,80 +290,6 @@ export class SeveranceRoom {
     column.castShadow = true;
     column.receiveShadow = true;
     this.group.add(column);
-  }
-
-  createDoor(position: THREE.Vector3, width: number, height: number, wallDir: THREE.Vector3, normal: THREE.Vector3) {
-    const frameDepth = 0.2;
-    const frameThickness = 0.1;
-    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5 });
-    
-    // Top Frame
-    const topFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(width, frameThickness, frameDepth),
-        frameMaterial
-    );
-    // Position center: start + width/2
-    const frameCenter = position.clone().add(wallDir.clone().multiplyScalar(width/2));
-    
-    topFrame.position.copy(frameCenter);
-    topFrame.position.y = height - frameThickness/2;
-    topFrame.lookAt(topFrame.position.clone().add(normal));
-    this.group.add(topFrame);
-    
-    // Side Frames
-    const sideGeo = new THREE.BoxGeometry(frameThickness, height, frameDepth);
-    
-    const leftFrame = new THREE.Mesh(sideGeo, frameMaterial);
-    leftFrame.position.copy(position).add(wallDir.clone().multiplyScalar(frameThickness/2));
-    leftFrame.position.y = height/2;
-    leftFrame.lookAt(leftFrame.position.clone().add(normal));
-    this.group.add(leftFrame);
-    
-    const rightFrame = new THREE.Mesh(sideGeo, frameMaterial);
-    rightFrame.position.copy(position).add(wallDir.clone().multiplyScalar(width - frameThickness/2));
-    rightFrame.position.y = height/2;
-    rightFrame.lookAt(rightFrame.position.clone().add(normal));
-    this.group.add(rightFrame);
-    
-    // Door Leaf
-    const doorGeo = new THREE.BoxGeometry(width - 2*frameThickness, height - frameThickness, 0.05);
-    const doorMat = new THREE.MeshStandardMaterial({ color: 0xDDDDDD, roughness: 0.2 });
-    const door = new THREE.Mesh(doorGeo, doorMat);
-    
-    door.position.copy(frameCenter);
-    door.position.y = (height - frameThickness) / 2;
-    door.position.add(normal.clone().multiplyScalar(-0.05));
-    
-    door.lookAt(door.position.clone().add(normal));
-    this.group.add(door);
-    
-    // Handle
-    const handleGeo = new THREE.BoxGeometry(0.05, 0.15, 0.08);
-    const handle = new THREE.Mesh(handleGeo, new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.8, roughness: 0.2 }));
-    
-    const handleOffset = (width/2) - 0.25;
-    handle.position.copy(frameCenter).add(wallDir.clone().multiplyScalar(handleOffset));
-    handle.position.y = 1.0;
-    handle.position.add(normal.clone().multiplyScalar(0.05));
-    handle.lookAt(handle.position.clone().add(normal));
-    
-    this.group.add(handle);
-    
-    this.createSwitches(frameCenter, wallDir, normal);
-  }
-
-  createSwitches(doorCenter: THREE.Vector3, wallDir: THREE.Vector3, normal: THREE.Vector3) {
-     const switchGeo = new THREE.BoxGeometry(0.12, 0.12, 0.02);
-     const switchMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
-     
-     const sw = new THREE.Mesh(switchGeo, switchMat);
-     const offset = 1.5; 
-     sw.position.copy(doorCenter).add(wallDir.clone().multiplyScalar(offset));
-     sw.position.y = 1.1;
-     sw.position.add(normal.clone().multiplyScalar(0.06));
-     
-     sw.lookAt(sw.position.clone().add(normal));
-     this.group.add(sw);
   }
 
   createClock(position: THREE.Vector3, normal: THREE.Vector3) {
