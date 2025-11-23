@@ -13,7 +13,6 @@ export class MonitorScreen {
   iframeEl: HTMLIFrameElement | null = null;
   iframeObject: CSS3DObject | null = null;
   wallpaperMesh: THREE.Mesh | null = null;
-  backgroundMesh: THREE.Mesh | null = null;
   isInteractive: boolean = false;
   canShowIframe: boolean = false;
   hoverListener: ((hovering: boolean) => void) | null = null;
@@ -44,8 +43,6 @@ export class MonitorScreen {
     iframe.style.height = '100%';
     iframe.style.border = '0';
     iframe.style.pointerEvents = 'none';
-    // Set background color on iframe element as well to cover any gaps or transparent areas
-    iframe.style.backgroundColor = '#0a1628';
     iframe.setAttribute('title', 'Lumon Data Refinement');
     this.iframeEl = iframe;
     
@@ -65,15 +62,15 @@ export class MonitorScreen {
     });
     // Much larger to cover entire monitor bezel area
     const backgroundGeometry = new THREE.PlaneGeometry(this.width * 1.2, this.height * 1.3);
-    this.backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+    const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
     
-    this.backgroundMesh.position.set(
+    backgroundMesh.position.set(
       this.position.x,
       this.position.y,
       this.position.z - 0.002 // Slightly behind other elements
     );
-    this.backgroundMesh.scale.set(this.scale, this.scale, this.scale);
-    parent.add(this.backgroundMesh);
+    backgroundMesh.scale.set(this.scale, this.scale, this.scale);
+    parent.add(backgroundMesh);
 
     // 3. Create wallpaper mesh (for wide view)
     const textureLoader = new THREE.TextureLoader();
@@ -235,38 +232,6 @@ export class MonitorScreen {
 
   setViewMode(cameraKey: CameraKey) {
     this.canShowIframe = cameraKey === CameraKey.BACK_WIDE || cameraKey === CameraKey.BACK_CLOSE;
-    
-    const offset = -0.025;
-    
-    if (this.iframeObject) {
-      if (cameraKey === CameraKey.BACK_CLOSE) {
-        // Add slight offset to fit better in close-up view
-        this.iframeObject.position.set(
-          this.position.x,
-          this.position.y + offset,
-          this.position.z
-        );
-      } else {
-        this.iframeObject.position.copy(this.position);
-      }
-    }
-    
-    if (this.backgroundMesh) {
-      if (cameraKey === CameraKey.BACK_CLOSE) {
-        this.backgroundMesh.position.set(
-          this.position.x,
-          this.position.y + offset,
-          this.position.z - 0.002
-        );
-      } else {
-        this.backgroundMesh.position.set(
-          this.position.x,
-          this.position.y,
-          this.position.z - 0.002
-        );
-      }
-    }
-
     if (!this.canShowIframe) {
       this.setInteractionEnabled(false);
     }
