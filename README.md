@@ -2,12 +2,6 @@
 
 > _Experience life as a Lumon employee. The work is mysterious and important._  
 
-![Microdata Refinement Simulator](public/photo.png)
-
----
-
-## Demo
-
 ![Demo](public/demo.gif)
 
 ---
